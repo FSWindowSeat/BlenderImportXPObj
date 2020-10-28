@@ -10,8 +10,8 @@ Properties and records that are currently supported:
 
 ## Installation
 
-- Download the latest release [v1.0-alpha.zip](https://github.com/FSWindowSeat/BlenderImportXPObj/archive/v1.0-alpha.zip) and safe
-  the file to a local directory
+- Download the latest release [v1.0-alpha.zip](https://github.com/FSWindowSeat/BlenderImportXPObj/releases/download/v1.0-alpha/BlenderImportXPObj_1_0_alpha.zip)
+  and safe the file to a local directory
 
 - Open Blender (Version 2.90 supported) and go to Edit -> Preferences -> Addons
 
