@@ -52,7 +52,7 @@ bl_info = {
     "location": "File > Import/Export > XPlane",
     "description": "Import X-Plane obj files",
     "warning": "",
-    "wiki_url": "",
+    "wiki_url": "https://github.com/FSWindowSeat/BlenderImportXPObj",
     "tracker_url": "",
     "support": "COMMUNITY",
     "category": "Import-Export"
