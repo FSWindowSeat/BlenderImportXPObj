@@ -1,4 +1,4 @@
-# ImportXPObj
+# Blender Import XP Object
 Import X-Plane OBJ8 .obj files into Blender 2.90.
 Properties and records that are currently supported:
 - TEXTURE
@@ -21,11 +21,15 @@ Properties and records that are currently supported:
 
 - Close Blender Preferences window
 
+<img width=900px src="https://fswindowseat.com/images/blenderimportxpobj/blenderimportxpobj_install_addon.jpg" alt="Installation"/>
+
 ## How To
 
 - Open Blender and go to File -> Import -> Import X-Plane obj files
 
 - Select one, or multiple X-Plane .obj files and click Import X-Plane OBJ files
+
+<img width=900px src="https://fswindowseat.com/images/blenderimportxpobj/blenderimportxpobj.jpg" alt="Blender 2.90"/>
 
 ## Notes
 
