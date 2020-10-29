@@ -21,7 +21,7 @@ Properties and records that are currently supported:
 
 - Close Blender Preferences window
 
-<img src="https://fswindowseat.com/images/blenderimportxpobj/blenderimportxpobj_install_addon.jpg" alt="Installation"/>
+<img src="https://fswindowseat.com/images/blenderimportxpobj/blenderimportxpobj_install_addon.png" alt="Installation"/>
 
 ## How To
 
