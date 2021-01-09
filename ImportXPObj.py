@@ -137,7 +137,7 @@ class XPlaneImport(bpy.types.Operator, ImportHelper):
         for line_str in lines:
             # Split line items
             line_items = line_str.split()
-            if len(line_items) == 0:
+            if len(line_items) < 2:
                 continue
 
             # Process default texture
@@ -148,14 +148,32 @@ class XPlaneImport(bpy.types.Operator, ImportHelper):
                 def_tex.location = Vector((-310, -185))
 
                 # Load and assign base texture file
-                tex_file_name = line_items[1]
-                dir_path = pathlib.PureWindowsPath(os.path.dirname(filepath))
-                texture_path = pathlib.PureWindowsPath(tex_file_name)
-                def_tex.image = bpy.data.images.load(os.path.normpath(os.path.join(dir_path, texture_path)))
+                #tex_file_name = line_items[1]
+                #dir_path = pathlib.PureWindowsPath(os.path.dirname(filepath))
+                #texture_path = pathlib.PureWindowsPath(tex_file_name)
+                
+                # Load and assign base texture file and link Color and Alpha channels between Base Color and BSDF nodes
+                texture = self.load_texture(filepath, line_items[1])
+                if texture is not None:
+                    def_tex.image = texture
+                    material_links.new(bsdf.inputs['Base Color'], def_tex.outputs['Color'])
+                    material_links.new(bsdf.inputs['Alpha'], def_tex.outputs['Alpha'])
 
-                # Link Color and Alpha channels between Base Color and BSDF nodes
-                material_links.new(bsdf.inputs['Base Color'], def_tex.outputs['Color'])
-                material_links.new(bsdf.inputs['Alpha'], def_tex.outputs['Alpha'])
+            # Process draped texture. Note: Supported in XP-11. Carbon copy of default texture processing as it appears
+            #                               that draped textures aren't supported in FS2020.
+            if line_items[0] == 'TEXTURE_DRAPED':
+                # Create Base Color node
+                def_tex = material_nodes.new('ShaderNodeTexImage')
+                def_tex.label = 'DRAPED TEXTURE'
+                def_tex.location = Vector((-310, -185))
+
+                # Load and assign base texture file and link Color and Alpha channels between Base Color and BSDF nodes
+                texture = self.load_texture(filepath, line_items[1])
+                if texture is not None:
+                    def_tex.image = texture
+                    material_links.new(bsdf.inputs['Base Color'], def_tex.outputs['Color'])
+                    material_links.new(bsdf.inputs['Alpha'], def_tex.outputs['Alpha'])
+
 
             # Process lighted/emissive texture
             if line_items[0] == 'TEXTURE_LIT':
@@ -320,3 +338,43 @@ class XPlaneImport(bpy.types.Operator, ImportHelper):
         me.update(calc_edges=True)
 
         return obj
+
+
+    def load_texture(self, filepath, tex_file_name):
+        """
+        This function loads the texture file from disk. In case the texture cannot be found,
+        it attemps to load the file with alterantive extensions, e.g. .dds instead of .png.
+
+        :param filepath: Path texture file folder
+        :param tex_file_name: Name texture file
+        :return: texture/image
+        """
+
+        # Concatenate file path and name
+        dir_path = pathlib.PureWindowsPath(os.path.dirname(filepath))
+        texture_path = pathlib.PureWindowsPath(tex_file_name)
+        
+        # 1st attempt to load texture file
+        try:
+            texture = bpy.data.images.load(os.path.normpath(os.path.join(dir_path, texture_path)))
+        except:
+            texture = None
+
+        # In case the 1st attempt failed, attempt to load filed with an alternate extension, i.e. .dds -> .png and vice versa
+        # Note: For some reason it is fairly common that the file extensions listed in the .obj file are incorrect
+        if(texture is None):
+            file_name, file_extension = os.path.splitext(tex_file_name)
+
+            if(file_extension == '.png'):
+                texture_path = pathlib.PureWindowsPath(file_name + ".dds")
+            
+            elif(file_extension == '.dds'):
+                texture_path = pathlib.PureWindowsPath(file_name + ".png")
+
+            # 2nd attempt to texture load file
+            try:
+                texture = bpy.data.images.load(os.path.normpath(os.path.join(dir_path, texture_path)))
+            except:
+                texture = None
+
+        return texture
