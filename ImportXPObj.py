@@ -197,14 +197,11 @@ class XPlaneImport(bpy.types.Operator, ImportHelper):
                 emissive_tex.label = 'EMISSIVE TEXTURE'
                 emissive_tex.location = Vector((-310, 115))
 
-                # Load and assign texture file
-                tex_file_name = line_items[1]
-                dir_path = pathlib.PureWindowsPath(os.path.dirname(filepath))
-                texture_path = pathlib.PureWindowsPath(tex_file_name)
-                emissive_tex.image = bpy.data.images.load(os.path.normpath(os.path.join(dir_path, texture_path)))
-
-                # Link Color channel of Emissive Texture node to Emission channel of BSDF node
-                material_links.new(emissive.inputs['Color'], emissive_tex.outputs['Color'])
+                # Load and assign base texture file and link Color channel of Emissive Texture node to Emission channel of BSDF node
+                texture = self.load_texture(filepath, line_items[1])
+                if texture is not None:
+                    emissive_tex.image = texture
+                    material_links.new(emissive.inputs['Color'], emissive_tex.outputs['Color'])
 
             # Process specular + normal map
             if line_items[0] == 'TEXTURE_NORMAL':
@@ -220,14 +217,11 @@ class XPlaneImport(bpy.types.Operator, ImportHelper):
                 norm_map_tex.label = 'NORMAL MAP TEXTURE'
                 norm_map_tex.location = Vector((-610, -580))
 
-                # Load and assign texture file
-                tex_file_name = line_items[1]
-                dir_path = pathlib.PureWindowsPath(os.path.dirname(filepath))
-                texture_path = pathlib.PureWindowsPath(tex_file_name)
-                norm_map_tex.image = bpy.data.images.load(os.path.normpath(os.path.join(dir_path, texture_path)))
-
-                # Link Color channel of Normal Map Texture node to Color channel of Normal Map node
-                material_links.new(norm_map.inputs['Color'], norm_map_tex.outputs['Color'])
+                # Load and assign base texture file and link Color channel of Normal Map Texture node to Color channel of Normal Map nod
+                texture = self.load_texture(filepath, line_items[1])
+                if texture is not None:
+                    norm_map_tex.image = texture
+                    material_links.new(norm_map.inputs['Color'], norm_map_tex.outputs['Color'])
 
             # Process triangle vertex table entries (VT). The eight numbers represent a triplet coordinate (x,y,z)
             # a triplet normal coordinate (x,y,z), and a corresponding texture coordinate (u,v / x,y)
